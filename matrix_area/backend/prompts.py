@@ -39,7 +39,7 @@ def generate_clone_prompt(specialty: str, goal: str, use_model: bool = False) ->
             import google.generativeai as genai
 
             genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-            model = genai.GenerativeModel(os.environ.get("MATRIX_MODEL", "gemini-1.5-flash"))
+            model = genai.GenerativeModel(os.environ.get("MATRIX_MODEL", "gemini-2.5-flash"))
             refined = model.generate_content(
                 "Improve this agent system prompt to be more precise and effective. "
                 "Keep it under 120 words. Return only the prompt:\n\n" + prompt

@@ -1,0 +1,18 @@
+# Secrets — NEVER commit the API key
+.env
+*.key
+secrets/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+# Runtime / sandbox artifacts
+backend/shared_memory.db
+sandbox_workspace/self_source/
+sandbox_workspace/staging/
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

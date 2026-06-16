@@ -77,9 +77,19 @@ endpoints جداد: `/clone_events` (بث thinking ديال clone)، `/best_clon
 
 - [x] **Phase 0 — The Mirror:** الهيكل، Gemini، Sandbox، Boss Panel ✅
 - [x] **Phase 1 — The Fixer:** Source Injection + Staging/Self-Test + Web Scout ✅
-- [ ] **Phase 2 — The Architect:** أدوات داخلية إضافية + hot-reload للـ self_source
-- [ ] **Phase 3 — The Multi-Mind:** فريق clones (Dev/Design/QA) + بث live فالـ UI
+- [x] **Phase 2 — The Architect:** Hot-Reload (محمي) + spawn_clone tool + Docker non-root ✅
+- [ ] **Phase 3 — The Multi-Mind:** فريق clones (Dev/Design/QA) + بث live ديال كل clone فالـ UI
 - [ ] **Phase 4 — Manus-Level:** استقلالية كاملة + Visual Self-Design
+
+### أدوات الـ agent الكاملة
+`run_shell`, `write_file`, `read_file`, `list_dir`, `remember`, `recall`,
+`web_search`, `read_own_source`, `propose_self_edit`, `hot_reload`, `spawn_clone`, `finish`
+
+### الموديل
+الافتراضي: `gemini-2.5-flash` (يتبدل عبر `MATRIX_MODEL` فالـ `.env`).
+
+### السر (الأمان)
+المفتاح كيتقرا من `.env` (موجود فـ `.gitignore` — **مكيتدفعش أبداً**). نسخ `.env.example` لـ `.env` وحط مفتاحك.
 
 > ملاحظة: الـ self-modification كيمر عبر Staging Area (الكود كيتجرب قبل ما يتطبق)،
 > والـ live process + kill switch دايماً محميين خارج تحكم الـ AI.

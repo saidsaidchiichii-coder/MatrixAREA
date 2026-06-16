@@ -13,9 +13,13 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY . .
 
+# Run as an UNPRIVILEGED user (not root) — defense-in-depth for the sandbox.
+RUN useradd -m -u 1000 matrix && chown -R matrix:matrix /app
+USER matrix
+
 # GEMINI_API_KEY is provided at runtime, never baked into the image:
-#   docker run -e GEMINI_API_KEY=xxxx -p 8000:8000 matrix
-ENV MATRIX_MODEL=gemini-1.5-flash
+#   docker run --env-file .env -p 8000:8000 matrix
+ENV MATRIX_MODEL=gemini-2.5-flash
 EXPOSE 8000
 
 WORKDIR /app/backend

@@ -19,6 +19,9 @@ Tools exposed to the model:
   - read_own_source(path)              read a file of the AI's own source
   - propose_self_edit(target,          test a self-edit in a staging area and
         content, test)                 promote it only if the test passes
+  - hot_reload(module)                 load a tested self_source module live
+  - spawn_clone(name, goal,            spawn a specialised worker clone
+        specialty)                     (hard cap of 10)
   - finish(summary)                    declare the goal complete
 
 Every step is streamed out as an event so the Boss Panel can render the
@@ -40,7 +43,7 @@ import staging
 # ---------------------------------------------------------------------------
 # Model configuration
 # ---------------------------------------------------------------------------
-MODEL_NAME = os.environ.get("MATRIX_MODEL", "gemini-1.5-flash")
+MODEL_NAME = os.environ.get("MATRIX_MODEL", "gemini-2.5-flash")
 
 
 def _configure() -> None:
@@ -79,7 +82,7 @@ When the goal is achieved, call `finish` with a short summary.
 Respond ONLY with a single JSON object on each turn, of the form:
   {"thought": "<your inner reasoning>", "tool": "<tool name>", "args": {...}}
 Valid tools: run_shell, write_file, read_file, list_dir, remember, recall,
-web_search, read_own_source, propose_self_edit, finish.
+web_search, read_own_source, propose_self_edit, hot_reload, spawn_clone, finish.
 """
 
 
@@ -104,6 +107,16 @@ def _dispatch(tool: str, args: dict, author: str) -> dict:
     if tool == "propose_self_edit":
         return staging.propose_self_edit(
             args.get("target", ""), args.get("content", ""), args.get("test", "")
+        )
+    if tool == "hot_reload":
+        import reloader  # local import keeps startup light
+        return reloader.hot_reload(args.get("module", ""))
+    if tool == "spawn_clone":
+        import clones  # local import avoids a circular import at module load
+        return clones.spawn(
+            args.get("name", f"clone-{args.get('specialty', 'worker')}"),
+            args.get("goal", ""),
+            args.get("specialty", "generalist"),
         )
     if tool == "finish":
         return {"finished": True, "summary": args.get("summary", "")}

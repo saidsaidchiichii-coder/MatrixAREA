@@ -20,6 +20,14 @@ reach, exactly as the constitution requires.
 import json
 from pathlib import Path
 
+# Load the API key from .env if present (the file is git-ignored, never committed).
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).parent.parent / ".env")
+except Exception:
+    pass
+
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles

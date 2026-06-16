@@ -104,9 +104,26 @@ async function pollClones() {
   } catch {}
 }
 
+// ---- Spawn a clone ----
+async function spawnClone() {
+  const name = $("cloneName").value.trim() || `clone-${Date.now() % 1000}`;
+  const goal = $("cloneGoal").value.trim();
+  const specialty = $("cloneSpec").value;
+  if (!goal) return;
+  await fetch("/clone", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, goal, specialty }),
+  });
+  $("cloneName").value = "";
+  $("cloneGoal").value = "";
+  pollClones();
+}
+
 $("runBtn").addEventListener("click", runGoal);
 $("killBtn").addEventListener("click", kill);
 $("reviveBtn").addEventListener("click", revive);
+$("spawnBtn").addEventListener("click", spawnClone);
 
 setInterval(pollResources, 2000);
 setInterval(pollClones, 3000);

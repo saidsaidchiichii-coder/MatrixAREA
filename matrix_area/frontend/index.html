@@ -53,6 +53,19 @@
 
       <div class="clones">
         <h3>Clones <span id="cloneCount">0 / 10</span></h3>
+        <div class="clone-form">
+          <input id="cloneName" placeholder="name" />
+          <select id="cloneSpec">
+            <option value="developer">developer</option>
+            <option value="designer">designer</option>
+            <option value="qa">qa</option>
+            <option value="security">security</option>
+            <option value="architect">architect</option>
+            <option value="generalist">generalist</option>
+          </select>
+        </div>
+        <input id="cloneGoal" placeholder="clone sub-goal" />
+        <button id="spawnBtn" class="ghost">+ spawn clone</button>
         <div id="cloneList" class="clone-list"></div>
       </div>
     </aside>
