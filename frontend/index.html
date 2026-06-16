@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MatrixAREA</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="mark">[ ]</span>
+      <span class="title">MatrixAREA</span>
+      <span class="sub">autonomous agent control</span>
+    </div>
+    <button id="theme" class="ghost" type="button">LIGHT</button>
+  </header>
+
+  <main class="grid">
+    <!-- OPERATOR PANEL (the boss) -->
+    <section class="panel console" aria-label="operator console">
+      <div class="panel-head">OPERATOR CONSOLE</div>
+      <div id="log" class="log"></div>
+      <form id="form" class="composer">
+        <textarea id="order" rows="2" placeholder="Issue an order to the agent..."></textarea>
+        <button type="submit">SEND</button>
+      </form>
+    </section>
+
+    <!-- MONITOR -->
+    <section class="panel monitor" aria-label="monitor">
+      <div class="panel-head">MONITOR</div>
+
+      <div class="block">
+        <div class="block-head">STATUS</div>
+        <dl class="kv">
+          <dt>MODEL</dt><dd id="m-model">--</dd>
+          <dt>API KEY</dt><dd id="m-key">--</dd>
+          <dt>CLONES</dt><dd id="m-clones">--</dd>
+        </dl>
+        <div class="meter"><span id="m-bar"></span></div>
+      </div>
+
+      <div class="block">
+        <div class="block-head">SYSTEM PROMPT</div>
+        <pre id="m-prompt" class="mono-box">--</pre>
+      </div>
+
+      <div class="cols">
+        <div class="block">
+          <div class="block-head">SOURCE (SELF)</div>
+          <ul id="m-source" class="list"></ul>
+        </div>
+        <div class="block">
+          <div class="block-head">SNAPSHOTS</div>
+          <ul id="m-snaps" class="list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
