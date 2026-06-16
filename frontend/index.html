@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MatrixAREA</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="mark">[ ]</span>
+      <span class="title">MatrixAREA</span>
+      <span class="sub">autonomous agent control</span>
+    </div>
+    <button id="theme" class="ghost" type="button">LIGHT</button>
+  </header>
+
+  <main class="grid">
+    <!-- OPERATOR PANEL (the boss) -->
+    <section class="panel console" aria-label="operator console">
+      <div class="panel-head">OPERATOR CONSOLE</div>
+      <div id="log" class="log"></div>
+      <form id="form" class="composer">
+        <textarea id="order" rows="2" placeholder="Issue an order to the agent..."></textarea>
+        <button type="submit">SEND</button>
+      </form>
+    </section>
+
+    <!-- BOSS PANEL + MONITOR -->
+    <section class="panel monitor" aria-label="boss panel">
+
+      <!-- BOSS PANEL : the human feedback loop -->
+      <div class="block boss">
+        <div class="block-head">BOSS PANEL — OVERRIDE</div>
+
+        <form id="focus-form" class="focus">
+          <input id="focus" type="text"
+                 placeholder='Directive, e.g. "focus only on memory management"' />
+          <button type="submit">SET</button>
+          <button id="focus-clear" type="button" class="ghost">CLEAR</button>
+        </form>
+        <div class="active-focus">FOCUS: <span id="m-focus">none</span></div>
+
+        <div class="switches">
+          <label><input type="checkbox" id="sw-cloning" /> Pause cloning</label>
+          <label><input type="checkbox" id="sw-evolution" /> Pause evolution</label>
+        </div>
+        <div class="halt-row">
+          <button id="halt" type="button" class="danger">HALT AGENT</button>
+          <button id="resume" type="button" class="ghost">RESUME</button>
+          <span id="halt-state" class="halt-state">running</span>
+        </div>
+      </div>
+
+      <!-- PENDING L3 APPROVALS -->
+      <div class="block">
+        <div class="block-head">PENDING APPROVALS — LEVEL 3 (ARCHITECTURAL)</div>
+        <ul id="m-pending" class="pending"></ul>
+      </div>
+
+      <!-- STATUS -->
+      <div class="block">
+        <div class="block-head">STATUS</div>
+        <dl class="kv">
+          <dt>MODEL</dt><dd id="m-model">--</dd>
+          <dt>API KEY</dt><dd id="m-key">--</dd>
+          <dt>CLONES</dt><dd id="m-clones">--</dd>
+          <dt>L3 GATE</dt><dd id="m-gate">--</dd>
+          <dt>SEARCH</dt><dd id="m-search">--</dd>
+        </dl>
+        <div class="meter"><span id="m-bar"></span></div>
+      </div>
+
+      <!-- SWARM : specialized clones -->
+      <div class="block">
+        <div class="block-head">SWARM — SPECIALIZED CLONES</div>
+        <div id="m-roles" class="roles"></div>
+        <ul id="m-clonelist" class="clonelist"></ul>
+      </div>
+
+      <!-- TOOL BELT : tools the agent built -->
+      <div class="block">
+        <div class="block-head">TOOL BELT — SELF-BUILT TOOLS</div>
+        <ul id="m-tools" class="list"></ul>
+      </div>
+
+      <!-- SYSTEM PROMPT -->
+      <div class="block">
+        <div class="block-head">SYSTEM PROMPT</div>
+        <pre id="m-prompt" class="mono-box">--</pre>
+      </div>
+
+      <div class="cols">
+        <div class="block">
+          <div class="block-head">SOURCE (SELF)</div>
+          <ul id="m-source" class="list"></ul>
+        </div>
+        <div class="block">
+          <div class="block-head">SNAPSHOTS</div>
+          <ul id="m-snaps" class="list"></ul>
+        </div>
+      </div>
+
+      <!-- UI DRAFTS : frontend the agent has evolved -->
+      <div class="block">
+        <div class="block-head">UI DRAFTS (AGENT-EVOLVED FRONTEND)</div>
+        <ul id="m-ui" class="list"></ul>
+      </div>
+
+      <!-- TRANSPARENCY LEDGER : why every change happened -->
+      <div class="block">
+        <div class="block-head">
+          TRANSPARENCY LEDGER
+          <span id="m-integrity" class="integrity">--</span>
+        </div>
+        <ul id="m-audit" class="audit"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
