@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATRIX — Project Mirror</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===================== MAIN STAGE ===================== -->
+    <main class="stage">
+      <header class="topbar">
+        <div class="brand">
+          <span class="dot"></span> MATRIX
+          <span class="subtitle">Project Mirror — Self-Evolving Agent</span>
+        </div>
+        <div class="status" id="status">idle</div>
+      </header>
+
+      <!-- The AI's inner monologue (Black Box Thinking) -->
+      <section class="panel thinking">
+        <h2>🧠 Thinking <span class="hint">inner monologue</span></h2>
+        <div class="stream" id="thinking"></div>
+      </section>
+
+      <!-- What the AI is doing inside the sandbox, live -->
+      <section class="panel sandbox">
+        <h2>📦 Sandbox Activity <span class="hint">live</span></h2>
+        <div class="stream mono" id="sandbox"></div>
+      </section>
+    </main>
+
+    <!-- ===================== BOSS PANEL ===================== -->
+    <aside class="boss">
+      <h2>👤 Boss Panel</h2>
+
+      <label class="field-label">Strategic goal</label>
+      <textarea id="goal" rows="3" placeholder="e.g. Make data processing 50% faster"></textarea>
+      <button id="runBtn" class="primary">▶ Execute</button>
+
+      <div class="kill-row">
+        <button id="killBtn" class="danger">🛑 KILL SWITCH</button>
+        <button id="reviveBtn" class="ghost">revive</button>
+      </div>
+
+      <div class="metrics">
+        <h3>Resource Mirror</h3>
+        <div class="metric"><span>CPU</span><div class="bar"><i id="cpuBar"></i></div><b id="cpuVal">0%</b></div>
+        <div class="metric"><span>RAM</span><div class="bar"><i id="ramBar"></i></div><b id="ramVal">0%</b></div>
+        <div class="metric"><span>Procs</span><b id="procVal">0</b></div>
+      </div>
+
+      <div class="clones">
+        <h3>Clones <span id="cloneCount">0 / 10</span></h3>
+        <div id="cloneList" class="clone-list"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

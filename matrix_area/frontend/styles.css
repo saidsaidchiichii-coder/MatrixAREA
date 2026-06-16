@@ -1,0 +1,82 @@
+/* MATRIX — Project Mirror
+   Classic, professional dark aesthetic (Grok / ChatGPT style).
+   Blacks, deep grays, white text, monospace for logs. No childish colors. */
+
+:root {
+  --bg: #0a0a0b;
+  --panel: #141416;
+  --panel-2: #1b1b1f;
+  --border: #2a2a30;
+  --text: #ededed;
+  --muted: #8a8a93;
+  --accent: #e8e8e8;
+  --green: #3fb950;
+  --red: #f85149;
+  --mono: "SF Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; }
+
+/* ---------------- Main stage ---------------- */
+.stage { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+.brand { font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+.brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+.subtitle { color: var(--muted); font-weight: 400; font-size: 12px; letter-spacing: 0; }
+.status { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.panel { margin: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; min-height: 0; }
+.panel h2 { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.hint { color: var(--muted); font-size: 11px; font-weight: 400; }
+
+.thinking { flex: 1; }
+.sandbox { flex: 1; }
+.stream { overflow-y: auto; flex: 1; font-size: 13px; line-height: 1.6; }
+.mono { font-family: var(--mono); font-size: 12px; }
+
+.thought { padding: 8px 12px; margin-bottom: 8px; background: var(--panel-2); border-left: 2px solid var(--muted); border-radius: 6px; }
+.action { color: var(--green); font-family: var(--mono); font-size: 12px; margin: 6px 0; }
+.obs { color: var(--muted); white-space: pre-wrap; background: #0e0e10; padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
+
+/* ---------------- Boss panel ---------------- */
+.boss {
+  width: 340px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--border);
+  padding: 18px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
+}
+.boss h2 { font-size: 15px; }
+.boss h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+.field-label { font-size: 12px; color: var(--muted); }
+textarea {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); padding: 10px; font-family: inherit; font-size: 13px; resize: vertical;
+}
+button { cursor: pointer; border: none; border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 600; }
+.primary { background: var(--accent); color: #0a0a0b; width: 100%; }
+.danger { background: var(--red); color: #fff; flex: 1; }
+.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.kill-row { display: flex; gap: 8px; }
+
+.metrics { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.metric { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 12px; }
+.metric span { width: 38px; color: var(--muted); }
+.metric b { width: 46px; text-align: right; font-family: var(--mono); }
+.bar { flex: 1; height: 6px; background: #000; border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0%; background: var(--green); transition: width .4s; }
+
+.clones { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.clone-list { display: flex; flex-direction: column; gap: 6px; }
+.clone-item { font-size: 12px; font-family: var(--mono); display: flex; justify-content: space-between; color: var(--muted); }
