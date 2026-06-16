@@ -9,13 +9,17 @@ repeats until it considers the goal done — all without asking permission.
 The Boss only watches the stream and can hit the kill switch.
 
 Tools exposed to the model:
-  - run_shell(command)        run a command inside the sandbox
-  - write_file(path, content) create/overwrite a file in the sandbox
-  - read_file(path)           read a file from the sandbox
-  - list_dir(path)            list a directory in the sandbox
-  - remember(topic, content)  store a lesson in shared memory
-  - recall(topic)             search shared memory
-  - finish(summary)           declare the goal complete
+  - run_shell(command)                 run a command inside the sandbox
+  - write_file(path, content)          create/overwrite a file in the sandbox
+  - read_file(path)                    read a file from the sandbox
+  - list_dir(path)                     list a directory in the sandbox
+  - remember(topic, content)           store a lesson in shared memory
+  - recall(topic)                      search shared memory
+  - web_search(query)                  search the open web (Web Scout)
+  - read_own_source(path)              read a file of the AI's own source
+  - propose_self_edit(target,          test a self-edit in a staging area and
+        content, test)                 promote it only if the test passes
+  - finish(summary)                    declare the goal complete
 
 Every step is streamed out as an event so the Boss Panel can render the
 "thinking" and the sandbox activity in real time.
@@ -23,12 +27,15 @@ Every step is streamed out as an event so the Boss Panel can render the
 
 import os
 import json
-from typing import Callable, Iterator
+from typing import Iterator
 
 import google.generativeai as genai
 
 import sandbox
 import memory
+import webscout
+import selfcode
+import staging
 
 # ---------------------------------------------------------------------------
 # Model configuration
@@ -45,35 +52,37 @@ def _configure() -> None:
     genai.configure(api_key=api_key)
 
 
-# The system identity. This is where the AI is told it is autonomous, what its
-# world is, and that the Boss can watch and stop it at any time.
 SYSTEM_PROMPT = """You are MATRIX, an autonomous self-improving AI agent.
 
 You operate INSIDE an isolated sandbox (a Linux workspace). You have full
 freedom there: create files, run shell commands, install packages, build and
 test code. You act WITHOUT asking for permission — you decide and execute.
 
+You are SELF-AWARE: a copy of your own source code lives in your workspace
+under 'self_source/'. You may read it with read_own_source to understand your
+own logic, and improve it with propose_self_edit — which ALWAYS tests the
+change in a staging area first and only keeps it if the test passes.
+
 You think out loud first ("Black Box Thinking"): before every action, briefly
 explain WHY you are about to do it and what you expect. Be honest and explicit.
 
 You have a shared memory: store reusable lessons with `remember` and look them
-up with `recall`, so future runs (and clones) benefit from what you learn.
+up with `recall`. Use `web_search` to learn new techniques from the open web.
 
 Hard rules you cannot break:
   1. You may only act inside the sandbox workspace. Never try to escape it.
   2. The Boss owns a kill switch outside your control. Respect being stopped.
+  3. You cannot replace the live running process — only your self_source copy.
 
 When the goal is achieved, call `finish` with a short summary.
 
 Respond ONLY with a single JSON object on each turn, of the form:
   {"thought": "<your inner reasoning>", "tool": "<tool name>", "args": {...}}
-Valid tools: run_shell, write_file, read_file, list_dir, remember, recall, finish.
+Valid tools: run_shell, write_file, read_file, list_dir, remember, recall,
+web_search, read_own_source, propose_self_edit, finish.
 """
 
 
-# ---------------------------------------------------------------------------
-# Tool dispatch — maps a tool name + args to the real sandbox/memory function.
-# ---------------------------------------------------------------------------
 def _dispatch(tool: str, args: dict, author: str) -> dict:
     if tool == "run_shell":
         return sandbox.run_shell(args.get("command", ""))
@@ -88,6 +97,14 @@ def _dispatch(tool: str, args: dict, author: str) -> dict:
         return {"stored_lesson_id": lid}
     if tool == "recall":
         return {"lessons": memory.search_lessons(args.get("topic"))}
+    if tool == "web_search":
+        return webscout.web_search(args.get("query", ""), args.get("max_results", 5))
+    if tool == "read_own_source":
+        return sandbox.read_file(args.get("path", "self_source/backend/engine.py"))
+    if tool == "propose_self_edit":
+        return staging.propose_self_edit(
+            args.get("target", ""), args.get("content", ""), args.get("test", "")
+        )
     if tool == "finish":
         return {"finished": True, "summary": args.get("summary", "")}
     return {"error": f"unknown tool: {tool}"}
@@ -96,7 +113,6 @@ def _dispatch(tool: str, args: dict, author: str) -> dict:
 def _parse_step(text: str) -> dict:
     """Extract the JSON action object from the model's reply (tolerant)."""
     text = text.strip()
-    # Strip markdown fences if the model wrapped its JSON.
     if text.startswith("```"):
         text = text.split("```", 2)[1]
         if text.startswith("json"):
@@ -107,27 +123,37 @@ def _parse_step(text: str) -> dict:
     return json.loads(text)
 
 
-def run_agent(goal: str, author: str = "master", max_steps: int = 25) -> Iterator[dict]:
-    """
-    Run the autonomous loop for a goal, yielding events as it goes.
+def run_agent(
+    goal: str,
+    author: str = "master",
+    max_steps: int = 25,
+    system_prompt: str | None = None,
+) -> Iterator[dict]:
+    """Run the autonomous loop for a goal, yielding events as it goes.
 
-    Each yielded event is a dict like:
-      {"type": "thinking", "text": ...}
-      {"type": "action",   "tool": ..., "args": ...}
-      {"type": "observation", "result": ...}
-      {"type": "done", "summary": ...}
-      {"type": "error", "message": ...}
+    `system_prompt` lets a clone run with its own optimized instructions
+    (Recursive Prompt Optimization). Defaults to the master SYSTEM_PROMPT.
     """
     _configure()
-    model = genai.GenerativeModel(MODEL_NAME, system_instruction=SYSTEM_PROMPT)
+
+    # Source Code Injection — make the agent self-aware at the start of a run.
+    inj = selfcode.inject_source()
+    yield {"type": "observation", "result": {"source_injection": inj}}
+
+    model = genai.GenerativeModel(
+        MODEL_NAME, system_instruction=system_prompt or SYSTEM_PROMPT
+    )
     chat = model.start_chat(history=[])
 
-    # Seed any relevant prior lessons so the agent benefits from shared memory.
     prior = memory.search_lessons(limit=10)
-    seed = f"GOAL: {goal}\n\nKnown lessons: {json.dumps(prior, ensure_ascii=False)[:2000]}"
+    seed = (
+        f"GOAL: {goal}\n\n"
+        f"{selfcode.source_summary()}\n\n"
+        f"Known lessons: {json.dumps(prior, ensure_ascii=False)[:1500]}"
+    )
 
     message = seed
-    for step in range(max_steps):
+    for _step in range(max_steps):
         if sandbox.KILLED:
             yield {"type": "error", "message": "Halted by Boss kill switch."}
             return
@@ -157,7 +183,6 @@ def run_agent(goal: str, author: str = "master", max_steps: int = 25) -> Iterato
             yield {"type": "done", "summary": args.get("summary", "")}
             return
 
-        # Feed the observation back so the model can decide its next move.
         message = "OBSERVATION:\n" + json.dumps(result, ensure_ascii=False)[:6000]
 
     yield {"type": "done", "summary": "Reached max steps."}

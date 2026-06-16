@@ -61,12 +61,25 @@ docker run -e GEMINI_API_KEY="your_key_here" -p 8000:8000 matrix
 2. **Kill Switch:** زر `/kill` فالـ Boss Panel كيوقف كلشي فوراً، وهو **خارج تحكم الـ AI**.
 3. **حد الاستنساخ:** أقصى 10 clones باش مايستنزفش الموارد.
 
+## 🧩 الموديلات الجديدة (Phase 1)
+
+| الملف | الوظيفة |
+|---|---|
+| `selfcode.py`  | **Source Code Injection** — كيحقن كود النظام لـ `self_source/` فالـ workspace باش الـ AI يكون واعي بكودو |
+| `staging.py`   | **Staging Area + Self-Testing** — أي تعديل ذاتي كيتجرب فبيئة معزولة، وكيتطبق فقط إلا نجح الـ test |
+| `webscout.py`  | **The Web Scout** — بحث فالويب (DuckDuckGo، بلا API key) |
+| `prompts.py`   | **Recursive Prompt Optimization** — توليد system prompt مخصص لكل clone |
+
+أدوات جديدة عند الـ agent: `web_search`, `read_own_source`, `propose_self_edit`.
+endpoints جداد: `/clone_events` (بث thinking ديال clone)، `/best_clone` (Evolutionary Selection).
+
 ## 🗺️ خارطة الطريق (Roadmap)
 
 - [x] **Phase 0 — The Mirror:** الهيكل، Gemini، Sandbox، Boss Panel ✅
-- [ ] **Phase 1 — The Fixer:** الـ AI كيصلح bugs وكيحسن الكود
-- [ ] **Phase 2 — The Architect:** يزيد features وأدوات داخلية
-- [ ] **Phase 3 — The Multi-Mind:** فريق clones (Dev/Design/QA)
-- [ ] **Phase 4 — Manus-Level:** استقلالية كاملة + self-design
+- [x] **Phase 1 — The Fixer:** Source Injection + Staging/Self-Test + Web Scout ✅
+- [ ] **Phase 2 — The Architect:** أدوات داخلية إضافية + hot-reload للـ self_source
+- [ ] **Phase 3 — The Multi-Mind:** فريق clones (Dev/Design/QA) + بث live فالـ UI
+- [ ] **Phase 4 — Manus-Level:** استقلالية كاملة + Visual Self-Design
 
-> ملاحظة: الـ self-modification كيمر عبر Staging Area (الكود كيتجرب قبل ما يتطبق).
+> ملاحظة: الـ self-modification كيمر عبر Staging Area (الكود كيتجرب قبل ما يتطبق)،
+> والـ live process + kill switch دايماً محميين خارج تحكم الـ AI.

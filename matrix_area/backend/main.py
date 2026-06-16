@@ -85,6 +85,18 @@ def clone_status():
     return {"active": clones.active_count(), "max": clones.MAX_CLONES, "clones": clones.status()}
 
 
+@app.get("/clone_events")
+def clone_events(name: str, limit: int = 100):
+    """Live thinking/activity stream for a single clone (for the Boss Panel)."""
+    return {"name": name, "events": clones.clone_events(name, limit)}
+
+
+@app.get("/best_clone")
+def best_clone():
+    """Evolutionary Selection — the winning clone whose approach to promote."""
+    return {"best": clones.best_result()}
+
+
 @app.post("/kill")
 def kill():
     """Hard kill switch — instantly halts all sandbox activity."""
